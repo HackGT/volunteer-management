@@ -5,7 +5,7 @@ const app = express();
 var db;
 
 MongoClient.connect(
-  "mongodb+srv://meha:0X4J02fFh1pQifzj@cluster0-tfnai.mongodb.net/test?retryWrites=true&w=majority",
+  "mongodb+srv://meha:dGbZhA9V4UeSJqHZ@cluster0-jgd6t.mongodb.net/test?retryWrites=true&w=majority",
   (err, client) => {
     if (err) return console.log(err);
     db = client.db(“CRUD_Tutorial”);
