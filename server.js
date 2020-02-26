@@ -53,40 +53,37 @@ app.get('/clockout', function(req, res) {
                 - "no current ongoing shift, clock out time added anyway"
      */
 
-     if (db.collection("vms").find({ _id: req.body.userid})) {
-      cur_shifts = db.vms.find(
-        {_id: req.body.userid},
-        {shifts: 1}
-      );
-      if (cur_shifts != null) {
-        const cur_tuple  = cur_shifts[cur_shifts.length - 1]
-        cur_tuple[1] = req.body.checkout_time;
-        cur_shifts[cur_shifts.length - 1] = cur_tuple;
-        db.vms.update(
-          {_id: req.body.userid},
-          {$set:
-            {
-              shifts: cur_shifts
+      db.collection("vms").find({ nfc_id: req.body.userid}, (response) => {
+        if (err) return console.log(err);
+        cur_shifts = response.shifts
+
+        if (cur_shifts != null) {
+          const cur_tuple  = cur_shifts[cur_shifts.length - 1]
+          cur_tuple.end_time = req.body.checkout_time;
+          db.vms.update(
+            {nfc_id: req.body.userid},
+            {$set:
+              {
+                shifts: cur_shifts
+              }
             }
-          }
-        );
-      } else {
-        const cur_shift_tuple = [null, req.body.checkout_time];
-        const all_shifts = [cur_shift_tuple];
-        db.vms.update(
-          {_id: req.body.userid},
-          {$set:
-            {
-              shifts: all_shifts
+          );
+        } else {
+          const cur_tuple = {"end_time": req.body.checkout_time};
+          const all_shifts = [cur_tuple];
+          db.vms.update(
+            {nfc_id: req.body.userid},
+            {$set:
+              {
+                shifts: all_shifts
+              }
             }
-          }
-        );
-        return ("no current ongoing shift, clock out time added anyway");
-      }
-     } else {
-       return ("user does not exist");
-     }
-    
+          );
+          console.log("no current ongoing shift, clock out time added anyway")
+        }
+        res.send("Clock-out time added")
+
+      });
 })
 
 //Rahul
