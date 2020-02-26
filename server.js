@@ -54,7 +54,7 @@ app.post('/edit-shift-history', function(req, res) {
 
 //Rashmi
 app.post('/get-shift-history', function(req, res) {
-    db.collection(‘users’).findOne({id: req.body.id}, (response) => {
+    db.collection(‘users’).findOne({nfc_id: req.body.id}, (response) => {
         var shifts = response.shifts
         res.send(shifts)
     })
