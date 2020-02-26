@@ -53,7 +53,7 @@ app.get('/clockout', function(req, res) {
                 - "no current ongoing shift, clock out time added anyway"
      */
 
-      db.collection("vms").find({ nfc_id: req.body.userid}, (response) => {
+      db.collection("users").find({ nfc_id: req.body.userid}, (response) => {
         if (err) return console.log(err);
         cur_shifts = response.shifts
 
