@@ -23,7 +23,20 @@ app.get('/clockin', function (req, res) {
             * success: boolean
             * errorcode: int
      */
+  var db
+  db.collection('clockin').save(req.time (err, result) => {
+    if (err) return console.log(err)
 
+    console.log('saved to database')
+    res.redirect('/')
+  })
+  
+  db.collection('clockin').save(req.userid (err, result) => {
+    if (err) return console.log(err)
+
+    console.log('saved to database')
+    res.redirect('/')
+  })
 })
 
 //Meha
