@@ -54,7 +54,10 @@ app.post('/edit-shift-history', function(req, res) {
 
 //Rashmi
 app.post('/get-shift-history', function(req, res) {
-
+    db.collection(‘users’).findOne({id: req.body.id}, (response) => {
+        var shifts = response.shifts
+        res.send(shifts)
+    })
 })
 
 app.listen(3000, function() {
