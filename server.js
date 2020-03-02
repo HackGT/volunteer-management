@@ -6,7 +6,7 @@ MongoClient.connect(
   "mongodb+srv://meha:0X4J02fFh1pQifzj@cluster0-tfnai.mongodb.net/test?retryWrites=true&w=majority",
   (err, client) => {
     if (err) return console.log(err);
-    db = client.db(“CRUD_Tutorial”);
+    db = client.db("CRUD_Tutorial");
     app.listen(3000, function() {
       console.log(“listening on 3000”);
     });
