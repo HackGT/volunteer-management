@@ -1,20 +1,26 @@
 const express = require('express');
 const MongoClient = require("mongodb").MongoClient;
-const app = express();
+const bodyParser = require('body-parser');
 
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+
+MONGO_URL = "mongodb://127.0.0.1:27017"
+//"mongodb+srv://meha:0X4J02fFh1pQifzj@cluster0-tfnai.mongodb.net/test?retryWrites=true&w=majority"
 MongoClient.connect(
-  "mongodb+srv://meha:0X4J02fFh1pQifzj@cluster0-tfnai.mongodb.net/test?retryWrites=true&w=majority",
+  MONGO_URL,
   (err, client) => {
     if (err) return console.log(err);
-    db = client.db("CRUD_Tutorial");
+    db = client.db("volunteer_management");
     app.listen(3000, function() {
-      console.log(“listening on 3000”);
+      console.log("listening on 3000");
     });
+
   }
 );
 
 //Aakash
-app.get('/clockin', function (req, res) {
+app.post('/clockin', function (req, res) {
     /*
         Input:
             * checkin time: string
@@ -23,7 +29,33 @@ app.get('/clockin', function (req, res) {
             * success: boolean
             * errorcode: int
      */
+    console.log(req.body)
+     db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
+         inserted = false
+         if(!doc) {
+             console.log("document doesn't exist");
+             await db.collection('users').insertOne({
+                 nfc_id: req.body.id,
+                 shifts: []
+             });
+             inserted = true
+         }
+         if(true) {
+             db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+             {
+                 $push: {
+                    shifts: {
+                     clockin: req.body.clockin,
+                     clockout: ""
+                    }
+                }
+            }, (err, doc) => {
+                console.log("here: ", doc);
+                res.send({success: true, errorcode: 0});
+            });
+         }
 
+     });
 })
 
 //Meha
@@ -54,12 +86,8 @@ app.post('/edit-shift-history', function(req, res) {
 
 //Rashmi
 app.post('/get-shift-history', function(req, res) {
-    db.collection(‘users’).findOne({id: req.body.id}, (response) => {
+    db.collection('users').findOne({id: req.body.id}, (response) => {
         var shifts = response.shifts
         res.send(shifts)
     })
-})
-
-app.listen(3000, function() {
-  console.log('listening on 3000')
-})
+});
