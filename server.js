@@ -29,7 +29,7 @@ app.post('/clockin', function (req, res) {
             * success: boolean
             * errorcode: int
      */
-    console.log(req.body)
+     console.log(req.body)
      db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
          inserted = false
          if(!doc) {
@@ -75,13 +75,28 @@ app.get('/clockout', function(req, res) {
 app.post('/edit-shift-history', function(req, res) {
     /*
         Input:
-            * new_time
-            * shift_number
-            * check-in: True/False
+            * shifts_array: []
+            * id
         Output:
             * success: boolean
             * errorcode: int
      */
+    console.log(req.body)
+     db.collection('users').findOne({"nfc_id": req.body.id}, async (err, doc) => {
+        if (!doc) {
+            res.send({success: false, errorcode: 0});
+        } else {
+            db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+             {
+                 $set: {
+                    shifts : req.body.shifts_array
+                }
+            }, (err, doc) => {
+                console.log("here: ", err);
+                res.send({success: true, errorcode: 0});
+            });
+        }
+    })
 })
 
 //Rashmi
