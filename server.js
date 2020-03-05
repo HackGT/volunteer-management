@@ -17,8 +17,7 @@ MongoClient.connect(
     });
 
   }
-
-*/
+);
 
 //Aakash
 app.post('/clockin', function (req, res) {
@@ -60,7 +59,7 @@ app.post('/clockin', function (req, res) {
 })
 
 //Meha
-app.get("/clockout", function(req, res) {
+app.post("/clockout", function(req, res) {
   /*
         Input:
             * checkout time: string
@@ -71,36 +70,50 @@ app.get("/clockout", function(req, res) {
                 - "user does not exist"
                 - "no current ongoing shift, clock out time added anyway"
      */
+    
+    db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
+      inserted = false
+      if(!doc) {
+          console.log("document doesn't exist");
+          await db.collection('users').insertOne({
+              nfc_id: req.body.id,
+              shifts: []
+          });
+          inserted = true
+      }
 
-  db.collection("users").find({ nfc_id: req.body.userid }, response => {
-    if (err) return console.log(err);
-    cur_shifts = response.shifts;
-
-    if (cur_shifts != null) {
-      const cur_tuple = cur_shifts[cur_shifts.length - 1];
-      cur_tuple.end_time = req.body.checkout_time;
-      db.vms.update(
-        { nfc_id: req.body.userid },
-        {
-          $set: {
-            shifts: cur_shifts
-          }
+      db.collection('users').findOne({"nfc_id": req.body.id}, (err, doc) => {
+        if (doc.shifts.length < 1 || doc.shifts[doc.shifts.length - 1].clockout.length > 0) {
+          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+          {
+              $push: {
+                shifts: {
+                  clockin: "",
+                  clockout: req.body.clockout
+                }
+            }
+          }, (err, doc) => {
+              console.log("here: ", doc);
+              res.send({success: true, errorcode: 0});
+          });
+        } else {
+          cur_shift = doc.shifts[doc.shifts.length - 1];
+          cur_shift.clockout = req.body.clockout;
+          all_shifts = doc.shifts;
+          all_shifts.pop();
+          all_shifts.push(cur_shift);
+          
+          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+          {
+            $set: {
+              shifts: all_shifts
+            }
+          }, (err, doc) => {
+            console.log("here: ", doc);
+            res.send({success: true, errorcode: 1});
+          });
         }
-      );
-    } else {
-      const cur_tuple = { end_time: req.body.checkout_time };
-      const all_shifts = [cur_tuple];
-      db.vms.update(
-        { nfc_id: req.body.userid },
-        {
-          $set: {
-            shifts: all_shifts
-          }
-        }
-      );
-      console.log("no current ongoing shift, clock out time added anyway");
-    }
-    res.send("Clock-out time added");
+      })
   });
 });
 
