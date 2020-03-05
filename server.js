@@ -97,11 +97,7 @@ app.post("/clockout", function(req, res) {
               res.send({success: true, errorcode: 0});
           });
         } else {
-          cur_shift = doc.shifts[doc.shifts.length - 1];
-          cur_shift.clockout = req.body.clockout;
-          all_shifts = doc.shifts;
-          all_shifts.pop();
-          all_shifts.push(cur_shift);
+          cur_shift = doc.shifts[doc.shifts.length - 1].clockout = req.body.clockout;
           
           db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
           {
