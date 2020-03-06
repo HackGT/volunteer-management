@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
 const bodyParser = require('body-parser');
 
@@ -59,21 +59,63 @@ app.post('/clockin', function (req, res) {
 })
 
 //Meha
-app.get('/clockout', function(req, res) {
-    /*
+app.post("/clockout", function(req, res) {
+  /*
         Input:
-            * checkin time: string
+            * checkout time: string
             * userid/name: int
         Output:
             * success: boolean
-            * errorcode: int
+            * errorcode: String
+                - "user does not exist"
+                - "no current ongoing shift, clock out time added anyway"
      */
+    
+    db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
+      inserted = false
+      if(!doc) {
+          console.log("document doesn't exist");
+          await db.collection('users').insertOne({
+              nfc_id: req.body.id,
+              shifts: []
+          });
+          inserted = true
+      }
 
-})
+      db.collection('users').findOne({"nfc_id": req.body.id}, (err, doc) => {
+        if (doc.shifts.length < 1 || doc.shifts[doc.shifts.length - 1].clockout.length > 0) {
+          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+          {
+              $push: {
+                shifts: {
+                  clockin: "",
+                  clockout: req.body.clockout
+                }
+            }
+          }, (err, doc) => {
+              console.log("here: ", doc);
+              res.send({success: true, errorcode: 0});
+          });
+        } else {
+          cur_shift = doc.shifts[doc.shifts.length - 1].clockout = req.body.clockout;
+          
+          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+          {
+            $set: {
+              shifts: all_shifts
+            }
+          }, (err, doc) => {
+            console.log("here: ", doc);
+            res.send({success: true, errorcode: 1});
+          });
+        }
+      })
+  });
+});
 
 //Rahul
-app.post('/edit-shift-history', function(req, res) {
-    /*
+app.post("/edit-shift-history", function(req, res) {
+  /*
         Input:
             * new_time
             * shift_number
@@ -82,7 +124,7 @@ app.post('/edit-shift-history', function(req, res) {
             * success: boolean
             * errorcode: int
      */
-})
+});
 
 //Rashmi
 app.post('/get-shift-history', function(req, res) {
