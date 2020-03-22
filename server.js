@@ -15,7 +15,6 @@ MongoClient.connect(
     app.listen(3000, function() {
       console.log("listening on 3000");
     });
-
   }
 );
 
@@ -70,7 +69,7 @@ app.post("/clockout", function(req, res) {
                 - "user does not exist"
                 - "no current ongoing shift, clock out time added anyway"
      */
-    
+
     db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
       inserted = false
       if(!doc) {
@@ -98,7 +97,7 @@ app.post("/clockout", function(req, res) {
           });
         } else {
           cur_shift = doc.shifts[doc.shifts.length - 1].clockout = req.body.clockout;
-          
+
           db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
           {
             $set: {
