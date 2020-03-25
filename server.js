@@ -60,7 +60,9 @@ app.post('/clockin', function (req, res) {
                   }
               }, (err, doc) => {
                   console.log("here: ", doc);
-                  res.send({success: true, errorcode: 1}); //Error that occurs when a volunteer clocks in but they forgot to clockout
+                  if(res.shifts[length()-1].clockout == null) {
+                    res.send({success: true, errorcode: 1}); //Error that occurs when a volunteer clocks in but they forgot to clockout
+                  }
               });
             inserted = false;
          }
