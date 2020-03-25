@@ -97,14 +97,15 @@ app.post("/clockout", function(req, res) {
               res.send({success: true, errorcode: 0});
           });
         } else {
-          all_shifts = doc
-          all_shifts.shifts[doc.shifts.length - 1].clockout = req.body.clockout;
-
           db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
           {
-            $set: {
-              shifts: all_shifts
-            }
+            $pop: { shifts: 1 }
+          });
+
+          // replace last shift with updated shift that has clockout time
+          db.collection('users').findOneAndUpdate({"nfc_id": req.body.id},
+          {
+            $push: { shifts: cur_shift}
           }, (err, doc) => {
             console.log("here: ", doc);
             res.send({success: true, errorcode: 1});
