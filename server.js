@@ -97,7 +97,8 @@ app.post("/clockout", function(req, res) {
               res.send({success: true, errorcode: 0});
           });
         } else {
-          cur_shift = doc.shifts[doc.shifts.length - 1].clockout = req.body.clockout;
+          all_shifts = doc
+          all_shifts.shifts[doc.shifts.length - 1].clockout = req.body.clockout;
 
           db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
           {
@@ -115,6 +116,7 @@ app.post("/clockout", function(req, res) {
 
 //Rahul
 app.post("/edit-shift-history", function(req, res) {
+
   /*
         Input:
             * shifts_array: []
@@ -123,23 +125,24 @@ app.post("/edit-shift-history", function(req, res) {
             * success: boolean
             * errorcode: int
      */
-    console.log(req.body)
-     db.collection('users').findOne({"nfc_id": req.body.id}, async (err, doc) => {
+    console.log(typeof(req.body.id)) //number
+
+     db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
+         console.log(doc) //null
         if (!doc) {
+            console.log("false response") //..
             res.send({success: false, errorcode: 0});
         } else {
             db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
              {
                  $set: {
-                    shifts : req.body.shifts_array
+                    shifts : JSON.parse(req.body.shifts_array)
                 }
             }, (err, doc) => {
-                console.log("here: ", err);
                 res.send({success: true, errorcode: 0});
             });
         }
     })
-})
 });
 
 //Rashmi
