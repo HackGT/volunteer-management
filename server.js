@@ -96,21 +96,16 @@ app.post("/clockout", function(req, res) {
               res.send({success: true, errorcode: 0});
           });
         } else {
-          cur_shift = doc.shifts[doc.shifts.length - 1]
+          last_index = doc.shifts.length - 1;
+          shifts_last_index = "shifts." + last_index
+          cur_shift = doc.shifts[doc.shifts.length - 1];
           cur_shift.clockout = req.body.clockout;
-          
-          // remove last shift
+
+          // replace last shift in the array
           db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
           {
-            $pop: { shifts: 1 }
-          });
-
-          // replace last shift with updated shift that has clockout time
-          db.collection('users').findOneAndUpdate({"nfc_id": req.body.id},
-          {
-            $push: { shifts: cur_shift}
+            $set: {shifts_last_index : cur_shift}
           }, (err, doc) => {
-            console.log("here: ", doc);
             res.send({success: true, errorcode: 1});
           });
         }
