@@ -40,7 +40,32 @@ app.post('/clockin', function (req, res) {
              });
              inserted = true
          }
-         if(true) {
+
+         if(req.body.clockin == null) {
+            res.send({success: false, errorcode: 2});
+         }
+
+         if(req.body.id == null) {
+            res.send({success: false, errorcode: 3});
+         }
+
+         if(req.body.clockout != null && req.body.clockin == null) {
+            db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+               {
+                   $push: {
+                      shifts: {
+                       clockin: req.body.clockin,
+                       clockout: ""
+                      }
+                  }
+              }, (err, doc) => {
+                  console.log("here: ", doc);
+                  res.send({success: true, errorcode: 1}); //Error that occurs when a volunteer clocks in but they forgot to clockout
+              });
+            inserted = false;
+         }
+
+         if(inserted) {
              db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
              {
                  $push: {
