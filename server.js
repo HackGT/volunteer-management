@@ -103,10 +103,8 @@ app.post("/clockout", function(req, res) {
           cur_shift.clockout = req.body.clockout;
 
           // replace last shift in the array
-          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
-          {
-            $set: {shifts_last_index : cur_shift}
-          }, (err, doc) => {
+          db.collection('users').updateOne({"nfc_id":req.body.id},
+            {$set: {[shifts_last_index]: cur_shift}}, (err, doc) => {
             res.send({success: true, errorcode: 1});
           });
         }
