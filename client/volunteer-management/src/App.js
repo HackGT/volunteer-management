@@ -1,23 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import CurrentParticipant from './components/CurrentParticipant';
+import Home from './components/Home'
 import './App.css';
 
-function App() {
+const App = () => {
+  const [home, setHome] = useState(true);
+  const [participant, setParticipant] = useState(false);
+
+  const goToParticipant = () => {
+    setHome(false);
+    setParticipant(true);
+  }
+
+  const goToHome = () => {
+    setHome(true);
+    setParticipant(false);
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {home && <Home goToParticipant={goToParticipant}/>}
+        {participant && <CurrentParticipant goToHome={goToHome} />}
       </header>
     </div>
   );

@@ -106,6 +106,24 @@ app.post("/clockout", function(req, res) {
           {
             $set: {shifts_last_index : cur_shift}
           }, (err, doc) => {
+            console.log("here: ", doc);
+            res.send({success: true, errorcode: 1});
+          });
+
+          // db.test.update({_id: 'sdsdfsd'}, {$set: {'a.2.x': 1}})
+          
+          // remove last shift
+          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+          {
+            $pop: { shifts: 1 }
+          });
+
+          // replace last shift with updated shift that has clockout time
+          db.collection('users').findOneAndUpdate({"nfc_id": req.body.id},
+          {
+            $push: { shifts: cur_shift}
+          }, (err, doc) => {
+            console.log("here: ", doc);
             res.send({success: true, errorcode: 1});
           });
         }
