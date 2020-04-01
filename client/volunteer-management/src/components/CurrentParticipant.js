@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import EditShiftHistory from './EditShiftHistory';
+import ClockOut from './ClockOut'
 
 const CurrentParticipant =  ({ goToHome }) => {
   const [editShiftHistory, setEditShiftHistory] = useState(false);
+  const [clockOut, setClockOut] = useState(false);
   
   const goToEditShiftHistory = () => {
     setEditShiftHistory(true);
+    setClockOut(false);
+  }
+
+  const goToClockOut = () => {
+    setEditShiftHistory(false);
+    setClockOut(true);
   }
 
   return(
@@ -18,11 +26,12 @@ const CurrentParticipant =  ({ goToHome }) => {
 
       <div>
         <button>clock in</button>
-        <button>clock out</button>
+        <button onClick={goToClockOut}>clock out</button>
         <button onClick={goToEditShiftHistory}>edit shift history</button>
       </div>
 
       <div>
+        {clockOut && <ClockOut />}
         {editShiftHistory && <EditShiftHistory />}
       </div>
     </div>
