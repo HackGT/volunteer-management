@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 MONGO_URL = "mongodb://127.0.0.1:27017"
 //"mongodb+srv://meha:0X4J02fFh1pQifzj@cluster0-tfnai.mongodb.net/test?retryWrites=true&w=majority"
@@ -28,7 +29,7 @@ app.post('/clockin', function (req, res) {
             * success: boolean
             * errorcode: int
      */
-    console.log(req.body)
+     console.log(req.body)
      db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
          inserted = false
          if(!doc) {
@@ -106,24 +107,6 @@ app.post("/clockout", function(req, res) {
           {
             $set: {shifts_last_index : cur_shift}
           }, (err, doc) => {
-            console.log("here: ", doc);
-            res.send({success: true, errorcode: 1});
-          });
-
-          // db.test.update({_id: 'sdsdfsd'}, {$set: {'a.2.x': 1}})
-          
-          // remove last shift
-          db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
-          {
-            $pop: { shifts: 1 }
-          });
-
-          // replace last shift with updated shift that has clockout time
-          db.collection('users').findOneAndUpdate({"nfc_id": req.body.id},
-          {
-            $push: { shifts: cur_shift}
-          }, (err, doc) => {
-            console.log("here: ", doc);
             res.send({success: true, errorcode: 1});
           });
         }
@@ -133,15 +116,33 @@ app.post("/clockout", function(req, res) {
 
 //Rahul
 app.post("/edit-shift-history", function(req, res) {
+
   /*
         Input:
-            * new_time
-            * shift_number
-            * check-in: True/False
+            * shifts_array: []
+            * id
         Output:
             * success: boolean
             * errorcode: int
      */
+    console.log(typeof(req.body.id)) //number
+
+     db.collection('users').findOne({"nfc_id":req.body.id}, async (err, doc) => {
+         console.log(doc) //null
+        if (!doc) {
+            console.log("false response") //..
+            res.send({success: false, errorcode: 0});
+        } else {
+            db.collection('users').findOneAndUpdate({"nfc_id":req.body.id},
+             {
+                 $set: {
+                    shifts : JSON.parse(req.body.shifts_array)
+                }
+            }, (err, doc) => {
+                res.send({success: true, errorcode: 0});
+            });
+        }
+    })
 });
 
 //Rashmi
