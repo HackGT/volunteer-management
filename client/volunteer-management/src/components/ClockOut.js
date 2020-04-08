@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-const ClockOut = () => {
+const ClockOut = ({ clockoutMessage }) => {
   return(
     <div className="App">
-        <p>You have successfully clocked out at: some time</p>
+        <p>{clockoutMessage}</p>
     </div>
   )
 }

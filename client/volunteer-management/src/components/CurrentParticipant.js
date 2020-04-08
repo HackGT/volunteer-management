@@ -5,6 +5,11 @@ import ClockOut from './ClockOut'
 const CurrentParticipant =  ({ goToHome }) => {
   const [editShiftHistory, setEditShiftHistory] = useState(false);
   const [clockOut, setClockOut] = useState(false);
+  const clockoutErrorCodes = {
+    "1": "You have clocked out successfully",
+    "0": "You have clocked out, but forgot to clock in. Go to Edit Shift History to record your clock in time"
+  };
+  const curClockoutMessage = "dummy clockout message";
   
   const goToEditShiftHistory = () => {
     setEditShiftHistory(true);
@@ -12,6 +17,8 @@ const CurrentParticipant =  ({ goToHome }) => {
   }
 
   const goToClockOut = () => {
+    // make api call here
+    // set curClockoutMessage based on error code from api call
     setEditShiftHistory(false);
     setClockOut(true);
   }
@@ -31,7 +38,7 @@ const CurrentParticipant =  ({ goToHome }) => {
       </div>
 
       <div>
-        {clockOut && <ClockOut />}
+        {clockOut && <ClockOut clockoutMessage={curClockoutMessage}/>}
         {editShiftHistory && <EditShiftHistory />}
       </div>
     </div>
