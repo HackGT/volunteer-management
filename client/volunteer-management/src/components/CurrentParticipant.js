@@ -3,7 +3,7 @@ import EditShiftHistory from './EditShiftHistory';
 
 const CurrentParticipant =  ({ goToHome }) => {
   const [editShiftHistory, setEditShiftHistory] = useState(false);
-  
+
   const goToEditShiftHistory = () => {
     setEditShiftHistory(true);
   }
